@@ -10,7 +10,7 @@ import org.eclipse.paho.client.mqttv3.MqttClient
 
 class MqttClient(
     context: Context?,
-    serverURI: String = "tcp://172.22.26.101:1883",
+    serverURI: String = "tcp://127.0.0.1:1883",
     clientID: String = MqttClient.generateClientId()
 ) {
     private var mqttClient = MqttAndroidClient(context, serverURI, clientID)
