@@ -63,8 +63,6 @@ class RegisterActivity : AppCompatActivity() {
                 binding.dniText.toString(),
                 binding.nEmployeeText.toString().toInt(),
                 binding.password.toString())
-
-
         }
         val intent = Intent(this, LogInActivity::class.java)
         startActivity(intent)
