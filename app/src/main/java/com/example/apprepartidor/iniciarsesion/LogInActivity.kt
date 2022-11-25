@@ -12,10 +12,11 @@ import com.example.apprepartidor.mqtt.MqttClient
 class LogInActivity : AppCompatActivity() {
     private lateinit var logInButton: Button
     private lateinit var binding: ActivityIniciarSesionBinding
-    private lateinit var mqttClient: MqttClient
+    private var mqttClient = MqttClient(this)
 
     private lateinit var userName: String
     private lateinit var userPassword: String
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +32,6 @@ class LogInActivity : AppCompatActivity() {
 
         logInButton.setOnClickListener {
             //TODO: llamar a funcion de conectarse a mqtt
-            mqttClient = MqttClient(this)
             mqttClient.connect(userName, userPassword)
             completeLogIn()
         }
@@ -42,6 +42,10 @@ class LogInActivity : AppCompatActivity() {
     private fun completeLogIn(){
         val intent = Intent(this, MainScreenActivity::class.java)
         startActivity(intent)
+    }
+
+    fun getMQTT(): MqttClient{
+        return this.mqttClient
     }
 
 
