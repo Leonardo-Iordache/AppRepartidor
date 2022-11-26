@@ -6,7 +6,7 @@ import org.eclipse.paho.client.mqttv3.IMqttActionListener
 import org.eclipse.paho.client.mqttv3.IMqttAsyncClient
 import org.eclipse.paho.client.mqttv3.IMqttToken
 
-class User(
+data class User(
     var name: String,
     var lastName: String,
     var dni: String,
