@@ -1,7 +1,6 @@
 package com.example.apprepartidor.mainScreen
 
 import androidx.appcompat.app.AppCompatActivity
-import androidx.activity.viewModels
 import android.os.Bundle
 import com.example.apprepartidor.R
 import com.example.apprepartidor.iniciarsesion.LogInActivity
