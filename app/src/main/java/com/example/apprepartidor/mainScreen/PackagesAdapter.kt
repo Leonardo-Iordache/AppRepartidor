@@ -1,51 +1,46 @@
 package com.example.apprepartidor.mainScreen
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.apprepartidor.R
-import com.example.apprepartidor.items.Package
+import com.example.apprepartidor.items.Package as Paquete
 
-class PackagesAdapter(
-    context: Context,
-    packageList: ArrayList<com.example.apprepartidor.items.Package>
-) : RecyclerView.Adapter<PackagesAdapter.PackagesViewHolder>() {
+class PackagesAdapter(private val listaPaquetes: ArrayList<Paquete>) :
+    RecyclerView.Adapter<PackagesAdapter.PackagesViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PackagesViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_layout, parent, false)
+    class PackagesViewHolder(itemView: View) : ViewHolder(itemView) {
+        private val mainScreen = MainScreenActivity()
 
-        return ViewHolder(view)
+        val idPaquete = itemView.findViewById<TextView>(R.id.package_text)
+        val imagen = itemView.findViewById<ImageView>(R.id.package_image)
+    }
+
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PackagesAdapter.PackagesViewHolder {
+        val context = parent.context
+        val inflater = LayoutInflater.from(context)
+        val packageView = inflater.inflate(R.layout.paquete_item, parent, false)
+
+        return PackagesViewHolder(packageView)
     }
 
     override fun onBindViewHolder(holder: PackagesViewHolder, position: Int) {
-        TODO("Not yet implemented")
+        val paquete: Paquete = listaPaquetes.get(position)
+        val textView = holder.idPaquete
+        textView.text = paquete.id.toString()
+
+        val imageView = holder.imagen
+
     }
 
     override fun getItemCount(): Int {
-        TODO("Not yet implemented")
+        return listaPaquetes.size
     }
-
-    class PackagesViewHolder(itemView: View, val onClick: (Package) -> Unit) :
-        RecyclerView.ViewHolder(itemView) {
-        private val mainScreen = MainScreenActivity()
-        private var currentPackage: com.example.apprepartidor.items.Package? = null
-
-        init {
-            itemView.setOnClickListener {
-                currentPackage?.let {
-                    onClick(it)
-                }
-            }
-        }
-    }
-
-
-
 
 
 }
