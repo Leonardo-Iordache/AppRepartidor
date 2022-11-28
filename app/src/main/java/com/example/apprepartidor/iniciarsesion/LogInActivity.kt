@@ -32,14 +32,20 @@ class LogInActivity : AppCompatActivity() {
 
         logInButton.setOnClickListener {
             //TODO: llamar a funcion de conectarse a mqtt
-            mqttClient.connect(userName, userPassword)
-            completeLogIn()
+            mqttClient.connect("android", "1234")
+            if(mqttClient.isConnected()){
+                completeLogIn()
+            }
         }
 
         setContentView(binding.root)
     }
 
     private fun completeLogIn(){
+        val topic = "test"
+
+        mqttClient.subscribe(topic)
+        mqttClient.publish(topic, "hola")
         val intent = Intent(this, MainScreenActivity::class.java)
         startActivity(intent)
     }

@@ -3,11 +3,13 @@ package com.example.apprepartidor.mainScreen
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.apprepartidor.R
+import com.example.apprepartidor.iniciarsesion.LogInActivity
 import com.example.apprepartidor.items.Package as Paquete
 
 class PackagesAdapter(private val listaPaquetes: ArrayList<Paquete>) :
@@ -15,9 +17,9 @@ class PackagesAdapter(private val listaPaquetes: ArrayList<Paquete>) :
 
     class PackagesViewHolder(itemView: View) : ViewHolder(itemView) {
         private val mainScreen = MainScreenActivity()
-
         val idPaquete = itemView.findViewById<TextView>(R.id.package_text)
         val imagen = itemView.findViewById<ImageView>(R.id.package_image)
+        val boton = itemView.findViewById<Button>(R.id.button_paquete)
     }
 
 
@@ -30,11 +32,20 @@ class PackagesAdapter(private val listaPaquetes: ArrayList<Paquete>) :
     }
 
     override fun onBindViewHolder(holder: PackagesViewHolder, position: Int) {
+        val mqttClient = LogInActivity().getMQTT()
+
         val paquete: Paquete = listaPaquetes.get(position)
         val textView = holder.idPaquete
         textView.text = paquete.id.toString()
 
         val imageView = holder.imagen
+
+        val button = holder.boton
+
+        button.setOnClickListener{
+            mqttClient.subscribe("test")
+            mqttClient.publish("test", "hola")
+        }
 
     }
 
