@@ -21,7 +21,6 @@ class LogInActivity : AppCompatActivity() {
     private lateinit var binding: ActivityIniciarSesionBinding
     private var mqttClient = MqttClient(this)
     private val serverURL = "http://192.0.0.0/usuario/"
-   // private var serverConnection = ServerConnectionViewModel()
 
     private lateinit var userName: String
     private lateinit var userPassword: String
@@ -77,7 +76,7 @@ class LogInActivity : AppCompatActivity() {
 
             if(call.isSuccessful){
                 val name = (user?.name?: String) as String
-                val contrasena = (user?.contrasena?: String) as String
+                val contrasena = (user?.password?: String) as String
 
                 if (name == userName && contrasena == userPassword){
                     completeLogIn()

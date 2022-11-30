@@ -1,7 +1,5 @@
 package com.example.apprepartidor.items
 
-import android.media.Image
-import com.example.apprepartidor.R
 import com.example.apprepartidor.items.Package as Paquete
 
 class Package(
@@ -21,5 +19,4 @@ class Package(
             return paquetes
         }
     }
-
 }
