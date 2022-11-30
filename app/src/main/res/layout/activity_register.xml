@@ -45,11 +45,11 @@
             android:autofillHints="" />
 
         <EditText
-            android:id="@+id/nEmployeeText"
+            android:id="@+id/idText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="Nº de empleado"
+            android:hint="ID empleado"
             android:inputType="textPersonName"
             android:autofillHints="" />
 

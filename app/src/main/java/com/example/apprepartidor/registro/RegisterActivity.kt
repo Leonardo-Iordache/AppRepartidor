@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import com.example.apprepartidor.R
-import com.example.apprepartidor.User
+import com.example.apprepartidor.UserResponse
 import com.example.apprepartidor.databinding.ActivityRegisterBinding
 import com.example.apprepartidor.iniciarsesion.LogInActivity
 
@@ -18,7 +18,7 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var nameInput: EditText
     private lateinit var lastNameInput: EditText
     private lateinit var dniInput: EditText
-    private lateinit var nEmployee: EditText
+    private lateinit var id: EditText
     private lateinit var passwordInput: EditText
     private lateinit var confirmPasswordInput: EditText
 
@@ -35,7 +35,7 @@ class RegisterActivity : AppCompatActivity() {
             nameInput = it.nameText
             lastNameInput = it.lastNameText
             dniInput = it.dniText
-            nEmployee = it.nEmployeeText
+            id = it.idText
             passwordInput = it.password
             confirmPasswordInput = it.confirmPassword
         }
@@ -58,11 +58,12 @@ class RegisterActivity : AppCompatActivity() {
 
     private fun completeRegistration() {
         if (binding.password.toString() == binding.confirmPassword.toString()){
-            val user = User(binding.nameText.toString(),
+            val userResponse = UserResponse(
+                binding.idText.toString().toInt(),
+                binding.password.toString(),
+                binding.nameText.toString(),
                 binding.lastNameText.toString(),
-                binding.dniText.toString(),
-                binding.nEmployeeText.toString().toInt(),
-                binding.password.toString())
+                binding.dniText.toString())
         }
         val intent = Intent(this, LogInActivity::class.java)
         startActivity(intent)

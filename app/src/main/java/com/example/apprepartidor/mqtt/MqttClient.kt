@@ -1,9 +1,7 @@
 package com.example.apprepartidor.mqtt
 
-import android.content.ContentValues.TAG
 import android.content.Context
 import android.util.Log
-import com.example.apprepartidor.User
 import org.eclipse.paho.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.*
 import org.eclipse.paho.client.mqttv3.MqttClient
