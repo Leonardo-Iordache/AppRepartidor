@@ -10,20 +10,26 @@ import com.example.apprepartidor.databinding.ActivityIniciarSesionBinding
 import com.example.apprepartidor.mainScreen.MainScreenActivity
 import com.example.apprepartidor.mqtt.MqttClient
 import com.example.apprepartidor.server.ClientService
+import com.google.gson.GsonBuilder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.gson.GsonConverterFactory
+import com.example.apprepartidor.items.Package as Paquete
+
 
 class LogInActivity : AppCompatActivity() {
     private lateinit var logInButton: Button
     private lateinit var binding: ActivityIniciarSesionBinding
     private var mqttClient = MqttClient(this)
-    private val serverURL = "http://192.0.0.0/usuario/"
+    private val serverURL = "http://192.168.1.129:8080/"
 
     private lateinit var userName: String
     private lateinit var userPassword: String
+
+    private lateinit var paquetes: ArrayList<Paquete>
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,67 +38,80 @@ class LogInActivity : AppCompatActivity() {
 
         binding = ActivityIniciarSesionBinding.inflate(layoutInflater)
 
-        binding.let{
+        binding.let {
             logInButton = it.logInButtonIniciarSesionActivity
             userName = it.userName.toString()
             userPassword = it.userPassword.toString()
         }
 
-        logInButton.setOnClickListener {
-            mqttClient.connect("android", "1234")
+        mqttClient.connect()
 
-            if(mqttClient.isConnected()){
-                searchByID("http://")
-            }
+
+        logInButton.setOnClickListener {
+            //searchUserByID()
+            completeLogIn()
+        /*if (mqttClient.isConnected()) {
+                completeLogIn()
+                //searchUserByID(serverURL)
+            }*/
         }
 
         setContentView(binding.root)
     }
 
-    private fun completeLogIn(){
-        val topic = "test"
 
-        mqttClient.subscribe(topic)
-        mqttClient.publish(topic, "hola")
-        val intent = Intent(this, MainScreenActivity::class.java)
-        startActivity(intent)
+    private fun completeLogIn() {
+        if(mqttClient.isConnected()){
+            val topic = "arduino"
+
+            mqttClient.subscribe(topic)
+            mqttClient.publish(topic, "hola oscar desde el movil")
+
+            val intent = Intent(this, MainScreenActivity::class.java)
+            startActivity(intent)
+        }
     }
 
-    fun getMQTT(): MqttClient{
-        return this.mqttClient
-    }
 
-    private fun getRetrofit():Retrofit{
+    private fun getRetrofit(): Retrofit {
+        val gson = GsonBuilder().setLenient().create()
         return Retrofit.Builder()
             .baseUrl(serverURL)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
     }
 
-    private fun searchByID(query: String){
+
+    private fun searchUserByID() {
         CoroutineScope(Dispatchers.IO).launch {
-            val call = getRetrofit().create(ClientService::class.java).getUserByID("$query/id")
+            val call =
+                getRetrofit().create(ClientService::class.java).getUserByID()
             val user = call.body()
 
-            if(call.isSuccessful){
-                val name = (user?.name?: String) as String
-                val contrasena = (user?.password?: String) as String
+            if (call.isSuccessful) {
+                val name = (user?.name ?: String) as String
+                val contrasena = (user?.password ?: String) as String
 
-                if (name == userName && contrasena == userPassword){
+                /*if (name == userName && contrasena == userPassword){
                     completeLogIn()
-                }
-            }
-            else{
+                }*/
+                //completeLogIn()
+            } else {
                 Log.d(this.javaClass.name, "Error al conectar con el servidor:${serverURL}")
             }
         }
     }
 
+    /*private fun searchPackage(query: String){
+        CoroutineScope(Dispatchers.IO).launch {
+            val call = getRetrofit().create(ClientService::class.java).getPackageByID("$query/id")
+            val paquete = call.body()
 
-
-
-
-
+            if(call.isSuccessful){
+                val paqueteObtenido =
+            }
+        }
+    }*/
 
 
 }

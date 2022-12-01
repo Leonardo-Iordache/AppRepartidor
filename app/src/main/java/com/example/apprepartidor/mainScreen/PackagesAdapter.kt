@@ -6,10 +6,13 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.apprepartidor.R
 import com.example.apprepartidor.iniciarsesion.LogInActivity
+import com.example.apprepartidor.mqtt.MqttClient
 import com.example.apprepartidor.items.Package as Paquete
 
 class PackagesAdapter(private val listaPaquetes: ArrayList<Paquete>) :
@@ -32,9 +35,10 @@ class PackagesAdapter(private val listaPaquetes: ArrayList<Paquete>) :
     }
 
     override fun onBindViewHolder(holder: PackagesViewHolder, position: Int) {
-        val mqttClient = LogInActivity().getMQTT()
+        val contexto = MainScreenActivity()
+        val mqttClient = MqttClient(contexto)
 
-        val paquete: Paquete = listaPaquetes.get(position)
+        val paquete: Paquete = listaPaquetes[position]
         val textView = holder.idPaquete
         textView.text = paquete.id.toString()
 
@@ -43,8 +47,8 @@ class PackagesAdapter(private val listaPaquetes: ArrayList<Paquete>) :
         val button = holder.boton
 
         button.setOnClickListener{
-            mqttClient.subscribe("test")
-            mqttClient.publish("test", "hola")
+            mqttClient.subscribe("arduino")
+            mqttClient.publish("arduino", "a pitar")
         }
 
     }

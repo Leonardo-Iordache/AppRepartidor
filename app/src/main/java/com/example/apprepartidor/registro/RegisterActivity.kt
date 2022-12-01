@@ -77,7 +77,7 @@ class RegisterActivity : AppCompatActivity() {
 
     private fun postNewUser(query: String){
         CoroutineScope(Dispatchers.IO).launch {
-            val call = getRetrofit().create(ClientService::class.java).postUserCredentials(query, outputJSON)
+            val call = getRetrofit().create(ClientService::class.java).putUserCredentials(query, outputJSON)
         }
     }
 
