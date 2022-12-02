@@ -1,11 +1,22 @@
 package com.example.apprepartidor
 
+import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
 data class UserResponse(
-    @SerializedName("ID") var id: String,
-    @SerializedName("contraseña") var password: String,
-    @SerializedName("nombre") var name: String,
-    @SerializedName("apellido") var lastName: String,
-    @SerializedName("DNI") var dni: String,
+    @SerializedName("ID")
+    @Expose
+    var id: String,
+    @SerializedName("contraseña")
+    @Expose
+    var password: String,
+    @SerializedName("nombre")
+    @Expose
+    var name: String,
+    @SerializedName("apellido")
+    @Expose
+    var lastName: String,
+    @SerializedName("DNI")
+    @Expose
+    var dni: String,
 )
