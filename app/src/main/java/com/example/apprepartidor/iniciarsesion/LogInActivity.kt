@@ -9,6 +9,7 @@ import com.example.apprepartidor.databinding.ActivityIniciarSesionBinding
 import com.example.apprepartidor.mainScreen.MainScreenActivity
 import com.example.apprepartidor.mqtt.MqttClient
 import com.example.apprepartidor.server.RestAPIService
+import kotlin.properties.Delegates
 import com.example.apprepartidor.items.Package as Paquete
 
 
@@ -17,7 +18,7 @@ class LogInActivity : AppCompatActivity() {
     private lateinit var binding: ActivityIniciarSesionBinding
     private var mqttClient = MqttClient(this)
     private val apiService = RestAPIService()
-    private lateinit var userName: String
+    var userID by Delegates.notNull<Int>()
     private lateinit var userPassword: String
     private lateinit var paquetes: ArrayList<Paquete>
 
@@ -29,7 +30,7 @@ class LogInActivity : AppCompatActivity() {
 
         binding.let {
             logInButton = it.logInButtonIniciarSesionActivity
-            userName = it.userName.toString()
+            userID = it.userID.toString().toInt()
             userPassword = it.userPassword.toString()
         }
         mqttClient.connect()

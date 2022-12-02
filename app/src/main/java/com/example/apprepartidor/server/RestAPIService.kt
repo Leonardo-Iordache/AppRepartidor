@@ -5,11 +5,11 @@ import com.example.apprepartidor.UserResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import com.example.apprepartidor.items.Package as Paquete
 
 
 class RestAPIService {
     private val serverURL = "http://192.168.1.129:8080/"
-
 
     /*private fun searchUserByID(retrofit: Retrofit, serverURL: String, userResponse: UserResponse): UserResponse {
         CoroutineScope(Dispatchers.IO).launch {
@@ -61,8 +61,28 @@ class RestAPIService {
                 Log.d(this.javaClass.name, response.toString())
             }
             else{
-                Log.d(this.javaClass.name, "Error en POST:${serverURL}")
+                Log.d(this.javaClass.name, "Error en POST: $serverURL")
             }
         }
+    }
+
+    fun getAllPackages(id: Int): ArrayList<Paquete>{
+        val paqueteTemporal: ArrayList<Paquete> = ArrayList()
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val retrofit = ServiceBuilder.buildService(ClientService::class.java)
+            val call = retrofit.getPackages(id)
+            val response = call.body()
+            paqueteTemporal.add(Paquete(1, 1, "coso"))
+
+            if(call.isSuccessful){
+                //TODO: coger los datos del array json y meterlos en una clase -> guardarlos en un arraylist
+                //cast from string to arrayjson
+            }
+            else{
+                Log.d(this.javaClass.name, "Error en getAllPackages: $serverURL")
+            }
+        }
+        return paqueteTemporal
     }
 }

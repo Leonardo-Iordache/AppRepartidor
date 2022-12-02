@@ -26,11 +26,11 @@
             android:layout_height="212dp" />
 
         <EditText
-            android:id="@+id/userName"
+            android:id="@+id/userID"
             android:layout_width="match_parent"
             android:layout_height="65dp"
             android:ems="10"
-            android:hint="Introduzca su nombre de usuario"
+            android:hint="Introduzca su ID de empleado"
             android:inputType="textPersonName"
             android:textColorHint="#757575"
             android:autofillHints="" />
