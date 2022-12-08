@@ -6,31 +6,27 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.apprepartidor.R
-import com.example.apprepartidor.iniciarsesion.LogInActivity
 import com.example.apprepartidor.mqtt.MqttClient
-import com.example.apprepartidor.items.Package as Paquete
+import com.example.apprepartidor.server.RestAPIService
+import com.example.apprepartidor.items.Paquete as Paquete
 
 class PackagesAdapter(private val listaPaquetes: ArrayList<Paquete>) :
     RecyclerView.Adapter<PackagesAdapter.PackagesViewHolder>() {
-
+    private val apiService = RestAPIService()
     class PackagesViewHolder(itemView: View) : ViewHolder(itemView) {
-        private val mainScreen = MainScreenActivity()
         val idPaquete = itemView.findViewById<TextView>(R.id.package_text)
-        val imagen = itemView.findViewById<ImageView>(R.id.package_image)
         val boton = itemView.findViewById<Button>(R.id.button_paquete)
     }
 
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PackagesAdapter.PackagesViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PackagesViewHolder {
         val context = parent.context
         val inflater = LayoutInflater.from(context)
         val packageView = inflater.inflate(R.layout.paquete_item, parent, false)
-
         return PackagesViewHolder(packageView)
     }
 
@@ -41,14 +37,17 @@ class PackagesAdapter(private val listaPaquetes: ArrayList<Paquete>) :
         val paquete: Paquete = listaPaquetes[position]
         val textView = holder.idPaquete
         textView.text = paquete.id.toString()
-
-        val imageView = holder.imagen
-
         val button = holder.boton
 
         button.setOnClickListener{
+            while(!mqttClient.isConnected()){
+                mqttClient.connect()
+            }
+            Toast.makeText(
+                contexto.applicationContext, "Introducir el paquete en el buzon: ${asignMailbox()}", Toast.LENGTH_SHORT
+            ).show()
             mqttClient.subscribe("arduino")
-            mqttClient.publish("arduino", "a pitar")
+            mqttClient.publish("arduino", "paquete entregado")
         }
 
     }
@@ -57,5 +56,8 @@ class PackagesAdapter(private val listaPaquetes: ArrayList<Paquete>) :
         return listaPaquetes.size
     }
 
-
+    private fun asignMailbox(): Int{
+        val freeMailboxes = apiService.getFreeMailboxes()
+        return freeMailboxes[0].id
+    }
 }

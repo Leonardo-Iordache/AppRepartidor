@@ -1,7 +1,8 @@
 package com.example.apprepartidor.server
 
 import com.example.apprepartidor.UserResponse
-import com.example.apprepartidor.items.Package as Paquete
+import com.example.apprepartidor.items.Mailbox
+import com.example.apprepartidor.items.Paquete as Paquete
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST
@@ -17,13 +18,16 @@ interface ClientService {
     @POST("ServidorUbicua-0.0.1-SNAPSHOT/EstadoBuzon/")
     suspend fun createNewUser(@Body requestBody: UserResponse): Response<UserResponse>
 
-    //metodo para coger los
-    @POST("ServidorUbicua-0.0.1-SNAPSHOT/...")
-    suspend fun getPackageByID(@Url url: String): Response<Paquete>
+    //metodo para validar un login
+    @POST("ServidorUbicua-0.0.1-SNAPSHOT/ValidarUsuario")
+    suspend fun validateUser(@Query("id") idCliente: Int, @Query("contraseña") password: String): Response<Paquete>
 
     //metodo para coger todos los paquetes de un repartidor
-    @POST("/paquetes")
+    @POST("ServidorUbicua-0.0.1-SNAPSHOT/Paquetes")
     suspend fun getPackages(@Query("id") idRepartidor: Int): Response<ArrayList<Paquete>>
+
+    @POST("ServidorUbicua-0.0.1-SNAPSHOT/BuzonesLibres")
+    suspend fun getFreeMailbox(): Response<ArrayList<Mailbox>>
 }
 
 

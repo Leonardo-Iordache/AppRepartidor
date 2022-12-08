@@ -7,15 +7,11 @@ import android.widget.Button
 import com.example.apprepartidor.databinding.ActivityMainBinding
 import com.example.apprepartidor.iniciarsesion.LogInActivity
 import com.example.apprepartidor.registro.RegisterActivity
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
 
 class InitialScreen : AppCompatActivity() {
     private lateinit var logInButton: Button
     private lateinit var registerButton: Button
     private lateinit var binding: ActivityMainBinding
-
-    val executorService: ExecutorService = Executors.newSingleThreadExecutor()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
