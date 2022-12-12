@@ -102,4 +102,17 @@ class RestAPIService {
         }
         return mailboxes
     }
+
+    suspend fun deliverPackage(idPaquete: String, idBuzon: String){
+        val retrofit = ServiceBuilder.buildService(ClientService::class.java)
+        val call = retrofit.deliverPackage(idPaquete, idBuzon)
+        if(call.isSuccessful){
+            val response = call.body()
+            if (response == 0) {
+                Log.d(this.javaClass.name, "Correcto")
+            } else {
+                Log.d(this.javaClass.name, "Error en deliverPackage:${serverURL} $call")
+            }
+        }
+    }
 }

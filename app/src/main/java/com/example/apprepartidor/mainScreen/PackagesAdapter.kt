@@ -17,6 +17,7 @@ import com.example.apprepartidor.responses.Paquete
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import org.w3c.dom.Text
 
 class PackagesAdapter(private val listaPaquetes: ArrayList<Paquete>) :
     RecyclerView.Adapter<PackagesAdapter.PackagesViewHolder>() {
@@ -41,6 +42,7 @@ class PackagesAdapter(private val listaPaquetes: ArrayList<Paquete>) :
 
         val paquete: Paquete = listaPaquetes[position]
         val textView = holder.idPaquete
+        val buzonEntrega = holder.buzonEntrega
         textView.text = paquete.id.toString()
         val button = holder.boton
 
@@ -48,7 +50,9 @@ class PackagesAdapter(private val listaPaquetes: ArrayList<Paquete>) :
             while(!mqttClient.isConnected()){
                 mqttClient.connect()
             }
-            asignMailbox(contexto)
+            asignMailbox(contexto, buzonEntrega)
+            sendData(paquete.id.toString(), buzonEntrega.text.toString())
+
             mqttClient.subscribe("buzon/entregas")
             mqttClient.publish("buzon/entregas", "paquete entregado")
         }
@@ -59,7 +63,7 @@ class PackagesAdapter(private val listaPaquetes: ArrayList<Paquete>) :
         return listaPaquetes.size
     }
 
-    private fun asignMailbox(contexto: Context) = runBlocking{
+    private fun asignMailbox(contexto: Context, buzonEntrega: TextView) = runBlocking{
         val job: Job
         var freeMailboxes: ArrayList<Mailbox> = ArrayList()
 
@@ -68,9 +72,16 @@ class PackagesAdapter(private val listaPaquetes: ArrayList<Paquete>) :
         }
 
         job.join()
+        buzonEntrega.text = freeMailboxes[0].id.toString()
         Toast.makeText(
             contexto.applicationContext, "Introducir el paquete en el buzon: ${freeMailboxes[0].id}", Toast.LENGTH_SHORT
         ).show()
+    }
 
+    private fun sendData(idPaquete: String, idBuzon: String) = runBlocking{
+        val job: Job = launch{
+            apiService.deliverPackage(idPaquete, idBuzon)
+        }
+        job.join()
     }
 }

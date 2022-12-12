@@ -35,7 +35,13 @@ interface ClientService {
     suspend fun getPackages(@Query("id") idRepartidor: Int): Response<ArrayList<Paquete>>
 
     @GET("ServidorUbicua-0.0.1-SNAPSHOT/BuzonesLibres")
-    suspend fun getFreeMailBoxes(@Query("estado") estado:Boolean = false): Response<ArrayList<Mailbox>>
+    suspend fun getFreeMailBoxes(@Query("estado") estado: Boolean = false): Response<ArrayList<Mailbox>>
+
+    @GET("ServidorUbicua-0.0.1-SNAPSHOT/BuzonPaquete?")
+    suspend fun deliverPackage(
+        @Query("idPaquete") idPaquete: String,
+        @Query("idBuzon") idBuzon: String
+    ): Response<Int>
 }
 
 
