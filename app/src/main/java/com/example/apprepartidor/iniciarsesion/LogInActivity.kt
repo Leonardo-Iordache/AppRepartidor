@@ -2,23 +2,24 @@ package com.example.apprepartidor.iniciarsesion
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.apprepartidor.R
 import com.example.apprepartidor.databinding.ActivityIniciarSesionBinding
 import com.example.apprepartidor.mainScreen.MainScreenActivity
 import com.example.apprepartidor.server.RestAPIService
-import com.example.apprepartidor.items.Paquete as Paquete
-
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class LogInActivity : AppCompatActivity() {
-    private lateinit var logInButton: Button
     private lateinit var binding: ActivityIniciarSesionBinding
     private val apiService = RestAPIService()
-    lateinit var userID: String
+    private lateinit var logInButton: Button
+    private lateinit var userID: String
     private lateinit var userPassword: String
-    private lateinit var paquetes: ArrayList<Paquete>
+    private var job: Job = Job()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,22 +27,25 @@ class LogInActivity : AppCompatActivity() {
         binding = ActivityIniciarSesionBinding.inflate(layoutInflater)
         logInButton = binding.logInButtonIniciarSesionActivity
         logInButton.setOnClickListener {
-            userID = binding.userID.toString()
-            userPassword = binding.userPassword.toString()
+            userID = binding.userID.text.toString()
+            userPassword = binding.userPassword.text.toString()
             completeLogIn()
         }
         setContentView(binding.root)
     }
 
     private fun completeLogIn() {
-        if(apiService.validateUser(userID.toInt(), userPassword)){
+        var userLogin = 0
+        Log.d(this.javaClass.name, userID + userPassword)
+        runBlocking {
+            job = launch {
+                userLogin = apiService.validateUser(userID, userPassword)
+            }
+        }
+        job.invokeOnCompletion {
             val intent = Intent(this, MainScreenActivity::class.java)
-            intent.putExtra("idUsuario", userID)
+            intent.putExtra("usuario", userLogin.toString())
             startActivity(intent)
         }
-        else{
-            Toast.makeText(applicationContext, "Credenciales invalidas", Toast.LENGTH_SHORT).show()
-        }
-
     }
 }

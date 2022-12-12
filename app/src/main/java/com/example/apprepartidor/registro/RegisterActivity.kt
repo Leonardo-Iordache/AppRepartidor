@@ -1,19 +1,17 @@
 package com.example.apprepartidor.registro
 
 import android.content.Intent
-import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
-import android.widget.EditText
 import android.widget.Toast
 import com.example.apprepartidor.R
-import com.example.apprepartidor.UserResponse
 import com.example.apprepartidor.databinding.ActivityRegisterBinding
 import com.example.apprepartidor.iniciarsesion.LogInActivity
 import com.example.apprepartidor.server.RestAPIService
-import com.google.gson.Gson
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class RegisterActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRegisterBinding
@@ -25,7 +23,11 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var id: String
     private lateinit var passwordInput: String
     private lateinit var confirmPasswordInput: String
+    private lateinit var direccionInput: String
+    private lateinit var emailInput: String
     private val apiService = RestAPIService()
+    private var job: Job = Job()
+    private val context = this
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,12 +45,14 @@ class RegisterActivity : AppCompatActivity() {
 
         registerButton.setOnClickListener {
             binding.let {
-                nameInput = it.nameText.text.toString()
-                lastNameInput = it.lastNameText.text.toString()
-                dniInput = it.dniText.text.toString()
-                id = it.idText.text.toString()
-                passwordInput = it.password.text.toString()
-                confirmPasswordInput = it.confirmPassword.text.toString()
+                nameInput = it.nameText.text.toString().trim()
+                lastNameInput = it.lastNameText.text.toString().trim()
+                dniInput = it.dniText.text.toString().trim()
+                id = it.idText.text.toString().trim()
+                passwordInput = it.password.text.toString().trim()
+                confirmPasswordInput = it.confirmPassword.text.toString().trim()
+                //direccionInput = it.direccionText.text.toString().trim()
+                //emailInput = it.correoText.text.toString().trim()
             }
             completeRegistration()
         }
@@ -56,15 +60,22 @@ class RegisterActivity : AppCompatActivity() {
     }
 
 
-    private fun completeRegistration() {
+    private fun completeRegistration() = runBlocking {
         if (passwordInput == confirmPasswordInput) {
-            val userResponse = UserResponse(
-                id, passwordInput, nameInput, lastNameInput, dniInput
-            )
-            apiService.addUser(userResponse, applicationContext)
-            val intent = Intent(this, LogInActivity::class.java)
+            job = launch {
+                val userID = apiService.addUser(
+                    id.toInt(),
+                    emailInput,
+                    nameInput,
+                    passwordInput,
+                    lastNameInput,
+                    dniInput,
+                    direccionInput
+                )
+            }
+            job.join()
+            val intent = Intent(context, LogInActivity::class.java)
             startActivity(intent)
-
         } else {
             Toast.makeText(
                 applicationContext, "Las contraseñas deben coincidir", Toast.LENGTH_SHORT

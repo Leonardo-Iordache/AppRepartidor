@@ -1,24 +1,29 @@
 package com.example.apprepartidor.mainScreen
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.apprepartidor.R
 import com.example.apprepartidor.mqtt.MqttClient
+import com.example.apprepartidor.responses.Mailbox
 import com.example.apprepartidor.server.RestAPIService
-import com.example.apprepartidor.items.Paquete as Paquete
+import com.example.apprepartidor.responses.Paquete
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class PackagesAdapter(private val listaPaquetes: ArrayList<Paquete>) :
     RecyclerView.Adapter<PackagesAdapter.PackagesViewHolder>() {
     private val apiService = RestAPIService()
     class PackagesViewHolder(itemView: View) : ViewHolder(itemView) {
         val idPaquete = itemView.findViewById<TextView>(R.id.package_text)
+        val buzonEntrega = itemView.findViewById<TextView>(R.id.buzonEntregaText)
         val boton = itemView.findViewById<Button>(R.id.button_paquete)
     }
 
@@ -43,11 +48,9 @@ class PackagesAdapter(private val listaPaquetes: ArrayList<Paquete>) :
             while(!mqttClient.isConnected()){
                 mqttClient.connect()
             }
-            Toast.makeText(
-                contexto.applicationContext, "Introducir el paquete en el buzon: ${asignMailbox()}", Toast.LENGTH_SHORT
-            ).show()
-            mqttClient.subscribe("arduino")
-            mqttClient.publish("arduino", "paquete entregado")
+            asignMailbox(contexto)
+            mqttClient.subscribe("buzon/entregas")
+            mqttClient.publish("buzon/entregas", "paquete entregado")
         }
 
     }
@@ -56,8 +59,18 @@ class PackagesAdapter(private val listaPaquetes: ArrayList<Paquete>) :
         return listaPaquetes.size
     }
 
-    private fun asignMailbox(): Int{
-        val freeMailboxes = apiService.getFreeMailboxes()
-        return freeMailboxes[0].id
+    private fun asignMailbox(contexto: Context) = runBlocking{
+        val job: Job
+        var freeMailboxes: ArrayList<Mailbox> = ArrayList()
+
+        job = launch{
+            freeMailboxes = apiService.getFreeMailboxes()
+        }
+
+        job.join()
+        Toast.makeText(
+            contexto.applicationContext, "Introducir el paquete en el buzon: ${freeMailboxes[0].id}", Toast.LENGTH_SHORT
+        ).show()
+
     }
 }

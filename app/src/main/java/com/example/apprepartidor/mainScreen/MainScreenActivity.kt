@@ -5,16 +5,17 @@ import android.os.Bundle
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.apprepartidor.R
-import com.example.apprepartidor.iniciarsesion.LogInActivity
 import com.example.apprepartidor.server.RestAPIService
-import com.example.apprepartidor.items.Paquete as Paquete
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import com.example.apprepartidor.responses.Paquete
 
 class MainScreenActivity : AppCompatActivity() {
     private lateinit var paquetes: ArrayList<Paquete>
     private val apiService = RestAPIService()
-
+    private var job: Job = Job()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,10 +23,16 @@ class MainScreenActivity : AppCompatActivity() {
         val recyclerViewPackage = findViewById<View>(R.id.recycler_viewPaquetes) as RecyclerView
         val userID = intent.extras?.getString("idUsuario")
         if (userID != null) {
-            paquetes = apiService.getAllPackages(userID.toInt())
+            runBlocking {
+                job = launch{
+                    paquetes = apiService.getAllPackages(userID.toInt())
+                }
+            }
         }
-        val adapter = PackagesAdapter(paquetes)
-        recyclerViewPackage.adapter = adapter
-        recyclerViewPackage.layoutManager = LinearLayoutManager(this)
+        job.invokeOnCompletion {
+            val adapter = PackagesAdapter(paquetes)
+            recyclerViewPackage.adapter = adapter
+            recyclerViewPackage.layoutManager = LinearLayoutManager(this)
+        }
     }
 }

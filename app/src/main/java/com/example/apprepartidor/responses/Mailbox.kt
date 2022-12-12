@@ -1,4 +1,4 @@
-package com.example.apprepartidor.items
+package com.example.apprepartidor.responses
 
 data class Mailbox(
     val id: Int,
