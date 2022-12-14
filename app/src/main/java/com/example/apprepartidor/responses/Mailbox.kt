@@ -1,8 +1,30 @@
 package com.example.apprepartidor.responses
 
+import com.google.gson.annotations.Expose
+import com.google.gson.annotations.SerializedName
+
 data class Mailbox(
-    val id: Int,
+    @SerializedName("idPaquete")
+    @Expose
+    val idPaquete: Int,
+
+    @SerializedName("direccion")
+    @Expose
+    val direccion: String,
+
+    @SerializedName("estado")
+    @Expose
     val estado: Boolean,
-    val codigo: Int,
-    val direccion: String
+
+    @SerializedName("idBuzon")
+    @Expose
+    val idBuzon: Int,
+
+    @SerializedName("idCliente")
+    @Expose
+    val idCliente: Int,
+
+    @SerializedName("idRepartidor")
+    @Expose
+    val idRepartidor: Int
 )

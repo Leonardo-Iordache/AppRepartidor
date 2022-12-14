@@ -23,7 +23,7 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var id: String
     private lateinit var passwordInput: String
     private lateinit var confirmPasswordInput: String
-    private lateinit var direccionInput: String
+    private lateinit var empresaInput: String
     private lateinit var emailInput: String
     private val apiService = RestAPIService()
     private var job: Job = Job()
@@ -51,8 +51,8 @@ class RegisterActivity : AppCompatActivity() {
                 id = it.idText.text.toString().trim()
                 passwordInput = it.password.text.toString().trim()
                 confirmPasswordInput = it.confirmPassword.text.toString().trim()
-                //direccionInput = it.direccionText.text.toString().trim()
-                //emailInput = it.correoText.text.toString().trim()
+                empresaInput = it.idEmpresa.text.toString().trim()
+                emailInput = it.idEmail.text.toString().trim()
             }
             completeRegistration()
         }
@@ -64,13 +64,13 @@ class RegisterActivity : AppCompatActivity() {
         if (passwordInput == confirmPasswordInput) {
             job = launch {
                 val userID = apiService.addUser(
-                    id.toInt(),
                     emailInput,
                     nameInput,
                     passwordInput,
                     lastNameInput,
                     dniInput,
-                    direccionInput
+                    empresaInput,
+                    id.toInt(),
                 )
             }
             job.join()

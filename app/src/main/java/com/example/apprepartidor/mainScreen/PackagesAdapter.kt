@@ -1,6 +1,6 @@
 package com.example.apprepartidor.mainScreen
 
-import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,7 +9,9 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.example.apprepartidor.GlobalContext
 import com.example.apprepartidor.R
+import com.example.apprepartidor.iniciarsesion.LogInActivity
 import com.example.apprepartidor.mqtt.MqttClient
 import com.example.apprepartidor.responses.Mailbox
 import com.example.apprepartidor.server.RestAPIService
@@ -17,7 +19,7 @@ import com.example.apprepartidor.responses.Paquete
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import org.w3c.dom.Text
+
 
 class PackagesAdapter(private val listaPaquetes: ArrayList<Paquete>) :
     RecyclerView.Adapter<PackagesAdapter.PackagesViewHolder>() {
@@ -37,24 +39,16 @@ class PackagesAdapter(private val listaPaquetes: ArrayList<Paquete>) :
     }
 
     override fun onBindViewHolder(holder: PackagesViewHolder, position: Int) {
-        val contexto = MainScreenActivity()
-        val mqttClient = MqttClient(contexto)
-
         val paquete: Paquete = listaPaquetes[position]
         val textView = holder.idPaquete
         val buzonEntrega = holder.buzonEntrega
-        textView.text = paquete.id.toString()
+        textView.text = paquete.idPaquete.toString()
         val button = holder.boton
+        asignMailbox(buzonEntrega)
 
         button.setOnClickListener{
-            while(!mqttClient.isConnected()){
-                mqttClient.connect()
-            }
-            asignMailbox(contexto, buzonEntrega)
-            sendData(paquete.id.toString(), buzonEntrega.text.toString())
-
-            mqttClient.subscribe("buzon/entregas")
-            mqttClient.publish("buzon/entregas", "paquete entregado")
+            sendData(paquete.idPaquete.toString(), buzonEntrega.text.toString())
+            GlobalContext.getMqtt()?.publish("buzon/entregas", buzonEntrega.text.toString())
         }
 
     }
@@ -63,25 +57,31 @@ class PackagesAdapter(private val listaPaquetes: ArrayList<Paquete>) :
         return listaPaquetes.size
     }
 
-    private fun asignMailbox(contexto: Context, buzonEntrega: TextView) = runBlocking{
+    private fun asignMailbox(buzonEntrega: TextView) = runBlocking{
         val job: Job
         var freeMailboxes: ArrayList<Mailbox> = ArrayList()
 
         job = launch{
             freeMailboxes = apiService.getFreeMailboxes()
+            Log.d(this.javaClass.name, "Buzones libres: $freeMailboxes")
         }
 
         job.join()
-        buzonEntrega.text = freeMailboxes[0].id.toString()
-        Toast.makeText(
-            contexto.applicationContext, "Introducir el paquete en el buzon: ${freeMailboxes[0].id}", Toast.LENGTH_SHORT
-        ).show()
+        buzonEntrega.text = freeMailboxes[0].idBuzon.toString()
     }
 
     private fun sendData(idPaquete: String, idBuzon: String) = runBlocking{
         val job: Job = launch{
             apiService.deliverPackage(idPaquete, idBuzon)
+            apiService.useMailbox(idBuzon)
+            val codigo = apiService.getCode(idPaquete).toString()
+            Log.d(this.javaClass.name, "El codigo del buzón es: $codigo")
+            GlobalContext.getMqtt()?.publish("buzon/codigo", codigo)
         }
         job.join()
     }
+
+    /*Toast.makeText(
+    contexto.applicationContext, "Introducir el paquete en el buzon: ${freeMailboxes[0].id}", Toast.LENGTH_SHORT
+    ).show()*/
 }
